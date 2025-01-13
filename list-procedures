@@ -3,10 +3,10 @@ def var i-cont          as int.
 def var i-cont-param    as int.
 
 
-def temp-table tt-nx-procedures
+def temp-table tt-procedures
     field hndl-name         as char format "x(32)"
     field proc-name         as char format "x(32)".
-def temp-table tt-nx-proc-params
+def temp-table tt-proc-params
     field hndl-name         as char format "x(32)"
     field proc-name         as char format "x(32)"
     field proc-param        as char format "x(100)".
@@ -30,15 +30,15 @@ procedure pi-busca-procs.
        
     do i-cont = 1 to num-entries(h-inp-handle:internal-entries) .
     
-        create  tt-nx-procedures.
-        assign tt-nx-procedures.hndl-name   = entry(num-entries(h-inp-handle:name, "\"), h-inp-handle:name, "\")
-               tt-nx-procedures.proc-name   = entry(i-cont, h-inp-handle:internal-entries).
+        create  tt-procedures.
+        assign tt-procedures.hndl-name   = entry(num-entries(h-inp-handle:name, "\"), h-inp-handle:name, "\")
+               tt-procedures.proc-name   = entry(i-cont, h-inp-handle:internal-entries).
         
-        do i-cont-param = 3 to num-entries(h-inp-handle:get-signature(tt-nx-procedures.proc-name)).
-            if entry(i-cont-param, h-inp-handle:get-signature(tt-nx-procedures.proc-name)) <> "" then do:
-                create tt-nx-proc-params.
-                assign tt-nx-proc-params.proc-name  = tt-nx-procedures.proc-name
-                       tt-nx-proc-params.proc-param = entry(i-cont-param, h-inp-handle:get-signature(tt-nx-procedures.proc-name)).
+        do i-cont-param = 3 to num-entries(h-inp-handle:get-signature(tt-procedures.proc-name)).
+            if entry(i-cont-param, h-inp-handle:get-signature(tt-procedures.proc-name)) <> "" then do:
+                create tt-proc-params.
+                assign tt-proc-params.proc-name  = tt-procedures.proc-name
+                       tt-proc-params.proc-param = entry(i-cont-param, h-inp-handle:get-signature(tt-procedures.proc-name)).
             end.
         end.                                                                                                              
     end.
@@ -46,18 +46,18 @@ end procedure.
 /***************************************************************************************************/
 procedure pi-lista-procs.
     
-    for each tt-nx-procedures no-lock break by tt-nx-procedures.hndl-name .
-        if first-of(tt-nx-procedures.hndl-name) then do:
-            output to value(session:temp-dir + "lista-procedures-" + tt-nx-procedures.hndl-name + ".txt").    
+    for each tt-procedures no-lock break by tt-procedures.hndl-name .
+        if first-of(tt-procedures.hndl-name) then do:
+            output to value(session:temp-dir + "lista-procedures-" + tt-procedures.hndl-name + ".txt").    
         end.                                                                                                      
-        put "procedure " + tt-nx-procedures.proc-name + "." format "x(60)" skip.
-        for each tt-nx-proc-params where tt-nx-proc-params.proc-name = tt-nx-procedures.proc-name no-lock.
-            put tt-nx-proc-params.proc-param + "." at 4 format "x(32)" skip.
+        put "procedure " + tt-procedures.proc-name + "." format "x(60)" skip.
+        for each tt-proc-params where tt-proc-params.proc-name = tt-procedures.proc-name no-lock.
+            put tt-proc-params.proc-param + "." at 4 format "x(32)" skip.
         end.
 
         put skip(2).
         
-        if last-of(tt-nx-procedures.hndl-name) then do:
+        if last-of(tt-procedures.hndl-name) then do:
             output close.
         end.
     end.
